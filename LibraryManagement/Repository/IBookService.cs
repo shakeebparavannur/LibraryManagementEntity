@@ -8,7 +8,7 @@ namespace LibraryManagement.Repository
         Task<IEnumerable<BookDto>> GetBooks();
         Task<Book> GetBookById(int id);
         Task<IEnumerable<BookDto>> GetBookByName(string name);
-        Task<Book> UpdateBook(Book book);
+        Task<Book> UpdateBook(int id,BookDto book);
         Task<bool> DeleteBook(int id);
         Task<BookDto> AddNewBook (BookDto book);
     }
