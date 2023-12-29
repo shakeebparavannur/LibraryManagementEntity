@@ -10,7 +10,7 @@ namespace LibraryManagement.Repository
     {
         private readonly LIbraryDbContext context;
         private IMapper mapper;
-        public BookService(LIbraryDbContext dbContext,IMapper mapper)
+        public BookService(LIbraryDbContext dbContext, IMapper mapper)
         {
             context = dbContext;
             this.mapper = mapper;
@@ -19,14 +19,14 @@ namespace LibraryManagement.Repository
         public async Task<BookDto> AddNewBook(BookDto book)
         {
             var book1 = mapper.Map<Book>(book);
-             await context.Books.AddAsync(book1);
+            await context.Books.AddAsync(book1);
             await context.SaveChangesAsync();
             return mapper.Map<BookDto>(book1);
         }
 
         public async Task<bool> DeleteBook(int id)
         {
-            Book book = await context.Books.FirstOrDefaultAsync(x=>x.BookId == id);
+            Book book = await context.Books.FirstOrDefaultAsync(x => x.BookId == id);
             if (book == null)
             {
                 return false;
@@ -49,7 +49,7 @@ namespace LibraryManagement.Repository
 
         public async Task<IEnumerable<BookDto>> GetBookByName(string name)
         {
-            IEnumerable<Book> books = await context.Books.Where(x=>x.Title.Contains(name)).ToListAsync();
+            IEnumerable<Book> books = await context.Books.Where(x => x.Title.Contains(name)).ToListAsync();
             if (books == null)
             {
                 return null;
@@ -59,24 +59,26 @@ namespace LibraryManagement.Repository
 
         public async Task<IEnumerable<BookDto>> GetBooks()
         {
-           IEnumerable<Book> books = await context.Books.ToListAsync();
+            IEnumerable<Book> books = await context.Books.ToListAsync();
             IEnumerable<BookDto> booksList = mapper.Map<IEnumerable<BookDto>>(books);
 
             return booksList;
         }
 
-        public async Task<Book> UpdateBook(Book book)
+        public async Task<Book> UpdateBook(int id, BookDto book)
         {
-            Book book1 = await context.Books.FirstOrDefaultAsync(x=>x.BookId==book.BookId);
+            var book1 = await context.Books.FirstOrDefaultAsync(x => x.BookId == id);
+            var updatedBook = mapper.Map<Book>(book);
             if (book1 != null)
             {
-                context.Books.Update(book1);
-                context.SaveChangesAsync();
-                return book1;
+                context.Entry(book1).State = EntityState.Detached;
+                context.Books.Update(updatedBook);
+                await context.SaveChangesAsync();
+                return updatedBook;
             }
             return null;
 
-            
+
         }
     }
 }
