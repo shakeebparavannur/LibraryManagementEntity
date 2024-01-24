@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Data
 {
-    public class LIbraryDbContext:DbContext
+    public class LibraryDbContext:DbContext
     {
-        public LIbraryDbContext(DbContextOptions<LIbraryDbContext>options):base(options)
+        public LibraryDbContext(DbContextOptions<LibraryDbContext>options):base(options)
         {
             
         }

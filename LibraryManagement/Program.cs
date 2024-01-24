@@ -1,6 +1,9 @@
 using LibraryManagement.Data;
 using LibraryManagement.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace LibraryManagement
 {
@@ -10,6 +13,27 @@ namespace LibraryManagement
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            //jwt config start here
+
+            var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<String>();
+            var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<String>();
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(option =>
+                {
+                    option.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtIssuer,
+                        ValidAudience = jwtIssuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+
+                    };
+                });
+            //Jwt configuration ends here
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -17,11 +41,12 @@ namespace LibraryManagement
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddAutoMapper(typeof(Program));
-            builder.Services.AddDbContext<LIbraryDbContext>(option =>
+            builder.Services.AddDbContext<LibraryDbContext>(option =>
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("LibraryConnection"));
             });
             builder.Services.AddScoped<IBookService,BookService>();
+            builder.Services.AddScoped<IUserService,UserService>();
 
             var app = builder.Build();
 
@@ -34,6 +59,7 @@ namespace LibraryManagement
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
