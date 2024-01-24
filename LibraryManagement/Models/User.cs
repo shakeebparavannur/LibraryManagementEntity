@@ -12,7 +12,6 @@ namespace LibraryManagement.Models
         public string Password { get; set; }
         public bool IsActived { get; set; }
         public int BooksInHand { get; set; }
-
         public ICollection<Borrowing> Borrowings { get; set; }
 
     }

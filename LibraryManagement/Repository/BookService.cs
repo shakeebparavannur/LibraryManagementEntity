@@ -3,14 +3,15 @@ using LibraryManagement.Data;
 using LibraryManagement.Models;
 using LibraryManagement.Models.Dtos;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace LibraryManagement.Repository
 {
     public class BookService : IBookService
     {
-        private readonly LIbraryDbContext context;
+        private readonly LibraryDbContext context;
         private IMapper mapper;
-        public BookService(LIbraryDbContext dbContext, IMapper mapper)
+        public BookService(LibraryDbContext dbContext, IMapper mapper)
         {
             context = dbContext;
             this.mapper = mapper;
@@ -61,10 +62,9 @@ namespace LibraryManagement.Repository
         {
             IEnumerable<Book> books = await context.Books.ToListAsync();
             IEnumerable<BookDto> booksList = mapper.Map<IEnumerable<BookDto>>(books);
-
+            
             return booksList;
         }
-
         public async Task<Book> UpdateBook(int id, BookDto book)
         {
             var book1 = await context.Books.FirstOrDefaultAsync(x => x.BookId == id);
@@ -77,8 +77,6 @@ namespace LibraryManagement.Repository
                 return updatedBook;
             }
             return null;
-
-
         }
     }
 }
